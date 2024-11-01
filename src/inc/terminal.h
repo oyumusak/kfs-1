@@ -37,7 +37,7 @@ enum vga_color {
 	VGA_COLOR_LIGHT_MAGENTA = 13,
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
-};  
+};
 
 void    update_cursor(int x, int y);
 void    termReset(void);

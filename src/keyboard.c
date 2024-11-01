@@ -1,5 +1,8 @@
 #include "inc/kern.h"
 #include "inc/keyboard.h"
+#include "inc/fdf.h"
+
+extern t_fdf env;
 
 struct IDT_entry IDT[256];
 
@@ -60,35 +63,31 @@ void	kb_init()
 	port_out(PIC1_DATA_PORT, 254); // 11111110 in bin
 }
 
-void	handle_keyboard_interrupt()
+void handle_keyboard_interrupt()
 {
-	
-     port_out(PIC1_COMMAND_PORT, 0x20); // write end of interrupt (EOI)
-     unsigned char status = port_in(KEYBOARD_STATUS_PORT);
-     if (status & 0x1) {
-     	char keycode = port_in(KEYBOARD_DATA_PORT);
-     	if (keycode < 0 || keycode >= 128)
-     		return;
-     	if (keycode == 72)//up arrow
-		{
-			ArrowHandler(1);
-		}
-		else if (keycode == 80)// down arrow
-		{
-			ArrowHandler(0);
-		}
-		else if (keycode == 75) // left arrow
-		{
-			leftRightArrowHandler(0);
-		}
-		else if (keycode == 77) // right arrow
-		{
-			leftRightArrowHandler(1);
-		}
-		else
-		{
-			write(1, &keyboard_map[keycode], 1);
-		}
-     }
-	 
+    port_out(PIC1_COMMAND_PORT, 0x20); // End of interrupt (EOI)
+    unsigned char status = port_in(KEYBOARD_STATUS_PORT);
+
+    if (status & 0x1) {
+        char keycode = port_in(KEYBOARD_DATA_PORT);
+        if (keycode < 0 || keycode >= 128)
+            return;
+
+        // Ok tuşlarına göre kamera pozisyonu güncelleniyor
+        if (keycode == 72) { // Up arrow
+            env.camera->y_offset -= 10;
+        }
+        else if (keycode == 80) { // Down arrow
+            env.camera->y_offset += 10;
+        }
+        else if (keycode == 75) { // Left arrow
+            env.camera->x_offset -= 10;
+        }
+        else if (keycode == 77) { // Right arrow
+            env.camera->x_offset += 10;
+        }
+
+        // Haritayı yeni pozisyona göre tekrar çizdir
+        ft_draw(env.map, &env);
+    }
 }

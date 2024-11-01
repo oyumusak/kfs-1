@@ -1,8 +1,17 @@
-bits 32
 section .multiboot
-	dd 0x1BADB002	; Magic number
-	dd 0x0			; Flags
-	dd - (0x1BADB002 + 0x0)	; Checksum
+    dd 0x1BADB002                ; Magic number
+    dd 0x00000007                ; Flags (ALIGN | MEMINFO | VIDEO_MODE)
+    dd -(0x1BADB002 + 0x00000007); Checksum
+    dd 0                         ; header_addr (kullanılmıyor)
+    dd 0                         ; load_addr (kullanılmıyor)
+    dd 0                         ; load_end_addr (kullanılmıyor)
+    dd 0                         ; bss_end_addr (kullanılmıyor)
+    dd 0                         ; entry_addr (kullanılmıyor)
+    dd 1                         ; mode_type (1: grafik modu)
+    dd 1024                      ; width
+    dd 768                       ; height
+    dd 32                        ; depth (32 bit renk derinliği)
+
 
 
 section .text
@@ -67,6 +76,9 @@ port_out:
 
 start:
 	cli				; Disable interrupts
+	push ebx
 	call kmain
+
 	infiniteLoop:
+		hlt
 	jmp infiniteLoop

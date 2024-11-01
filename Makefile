@@ -22,4 +22,6 @@ docker-run:
 	docker exec -t oyumusak-kfs rm -rf /kfs/omex.iso
 	docker exec -t oyumusak-kfs grub-mkrescue -o omex.iso ./iso/
 	docker cp oyumusak-kfs:/kfs/omex.iso boot/omex.iso
-	qemu-system-i386 -cdrom boot/omex.iso
+	qemu-system-i386 -cdrom boot/omex.iso -vga std -display sdl
+
+
